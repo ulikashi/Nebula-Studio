@@ -322,17 +322,20 @@ a {
 .thumb {
   position: absolute;
   inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   transition: transform 0.6s var(--ease), filter 0.6s var(--ease);
 }
 
-.thumb-1 { background: linear-gradient(140deg, #132138, #2f46ff, #73ffe0); }
-.thumb-2 { background: linear-gradient(160deg, #230f32, #8c26ff, #ffc0ff); }
-.thumb-3 { background: linear-gradient(130deg, #041c20, #07858c, #42ffc8); }
-.thumb-4 { background: linear-gradient(140deg, #281610, #f7472d, #ffcb77); }
-.thumb-5 { background: linear-gradient(130deg, #0b2135, #1f78dc, #79f6ff); }
-.thumb-6 { background: linear-gradient(120deg, #191226, #b14eff, #fb8ddb); }
-.thumb-7 { background: linear-gradient(160deg, #0f1f31, #2768c4, #84d6ff); }
-.thumb-8 { background: linear-gradient(125deg, #10251b, #2abf83, #a8ff82); }
+.thumb-1 { background-image: url("./assets/images/project-1.webp"); }
+.thumb-2 { background-image: url("./assets/images/project-2.webp"); }
+.thumb-3 { background-image: url("./assets/images/project-3.webp"); }
+.thumb-4 { background-image: url("./assets/images/project-4.webp"); }
+.thumb-5 { background-image: url("./assets/images/project-5.webp"); }
+.thumb-6 { background-image: url("./assets/images/project-6.webp"); }
+.thumb-7 { background-image: url("./assets/images/project-7.webp"); }
+.thumb-8 { background-image: url("./assets/images/project-8.webp"); }
 
 .card-meta,
 .hover-copy {
@@ -585,7 +588,10 @@ a {
   margin-top: 0.3rem;
   height: 220px;
   border-radius: 0.8rem;
-  background: linear-gradient(130deg, #2f46ff, #78ffe2);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url("./assets/images/project-1.webp");
 }
 
 #modalTitle {

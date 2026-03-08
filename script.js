@@ -18,49 +18,49 @@ const projectData = {
     title: "Aurora Labs",
     type: "Website · SaaS",
     desc: "Narrative product site focused on conversion through visual sequencing and layered motion.",
-    gradient: "linear-gradient(130deg, #2f46ff, #73ffe0)",
+    image: "./assets/images/project-1.webp",
   },
   pulse: {
     title: "Pulse Zero",
     type: "Brand · Wearables",
     desc: "Brand system and launch microsite combining tactile typography with kinetic modules.",
-    gradient: "linear-gradient(130deg, #8c26ff, #ffc0ff)",
+    image: "./assets/images/project-2.webp",
   },
   atlas: {
     title: "Atlas Motion",
     type: "Campaign · B2B",
     desc: "High-contrast campaign experience where messaging unfolds in timed storyboard sections.",
-    gradient: "linear-gradient(130deg, #07858c, #42ffc8)",
+    image: "./assets/images/project-3.webp",
   },
   lumen: {
     title: "Lumen House",
     type: "Website · Fashion",
     desc: "Editorial e-commerce framework with quick browsing paths and smooth collection reveals.",
-    gradient: "linear-gradient(130deg, #f7472d, #ffcb77)",
+    image: "./assets/images/project-4.webp",
   },
   nova: {
     title: "Nova Grid",
     type: "Digital Strategy",
     desc: "Data-driven sprint blending UX improvements, growth experiments, and governance.",
-    gradient: "linear-gradient(130deg, #1f78dc, #79f6ff)",
+    image: "./assets/images/project-5.webp",
   },
   drift: {
     title: "Drift Audio",
     type: "Brand · Campaign",
     desc: "Motion-rich identity kit translated into launch content and modular web components.",
-    gradient: "linear-gradient(130deg, #b14eff, #fb8ddb)",
+    image: "./assets/images/project-6.webp",
   },
   flux: {
     title: "Flux Capital",
     type: "Website · Finance",
     desc: "Premium investor-facing platform optimized for storytelling, trust, and speed.",
-    gradient: "linear-gradient(130deg, #2768c4, #84d6ff)",
+    image: "./assets/images/project-7.webp",
   },
   echo: {
     title: "Echo Foods",
     type: "Campaign · FMCG",
     desc: "Cross-channel campaign hub with modular storytelling and interactive product narratives.",
-    gradient: "linear-gradient(130deg, #2abf83, #a8ff82)",
+    image: "./assets/images/project-8.webp",
   },
 };
 
@@ -140,7 +140,7 @@ projectCards.forEach((card) => {
     const data = projectData[projectKey];
     if (!data) return;
 
-    modalVisual.style.background = data.gradient;
+    modalVisual.style.backgroundImage = `url('${data.image}')`;
     modalTitle.textContent = data.title;
     modalType.textContent = data.type;
     modalDesc.textContent = data.desc;
