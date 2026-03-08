@@ -1,155 +1,196 @@
-from PIL import Image, ImageDraw, ImageFilter, ImageOps, ImageEnhance
-from urllib.request import urlopen, Request
-import os, io, random
+from PIL import Image, ImageDraw, ImageFilter, ImageOps
+import os, random
 
 W, H = 1600, 1000
 OUT = "/Users/uliana/creative_dgi/Nebula-Studio/assets/images"
 os.makedirs(OUT, exist_ok=True)
 
-CASES = [
-    ("project-1.webp", "AURORA LABS", "SaaS Platform", "laptop,minimal,technology,workspace", (63, 230, 255), (12, 20, 39)),
-    ("project-2.webp", "PULSE ZERO", "Wearables Brand", "smartwatch,fitness,product,studio", (255, 102, 224), (30, 14, 36)),
-    ("project-3.webp", "ATLAS MOTION", "B2B Campaign", "billboard,city,advertising,night", (118, 255, 203), (8, 24, 30)),
-    ("project-4.webp", "LUMEN HOUSE", "Fashion E-commerce", "fashion,editorial,model,studio", (255, 177, 116), (43, 17, 14)),
-    ("project-5.webp", "NOVA GRID", "Digital Strategy", "creative,direction,planning,office", (134, 194, 255), (11, 24, 40)),
-    ("project-6.webp", "DRIFT AUDIO", "Music Campaign", "headphones,vinyl,music,neon", (204, 132, 255), (23, 12, 39)),
-    ("project-7.webp", "FLUX CAPITAL", "Fintech Website", "finance,corporate,city,architecture", (120, 202, 255), (11, 24, 36)),
-    ("project-8.webp", "ECHO FOODS", "FMCG Launch", "food,packaging,product,green", (127, 255, 168), (13, 32, 23)),
+cases = [
+    ("project-1.webp", "saas", ((14, 25, 44), (55, 118, 255))),
+    ("project-2.webp", "wearable", ((33, 14, 43), (201, 88, 255))),
+    ("project-3.webp", "campaign", ((10, 32, 35), (35, 173, 156))),
+    ("project-4.webp", "fashion", ((46, 19, 16), (243, 111, 83))),
+    ("project-5.webp", "strategy", ((13, 28, 44), (81, 156, 255))),
+    ("project-6.webp", "audio", ((25, 14, 44), (165, 85, 255))),
+    ("project-7.webp", "fintech", ((11, 30, 42), (50, 138, 226))),
+    ("project-8.webp", "food", ((13, 35, 24), (58, 188, 122))),
 ]
 
-FONT_BOLD = "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
-FONT_REG = "/System/Library/Fonts/Supplemental/Arial.ttf"
 
-def font(path, size):
-    try:
-        from PIL import ImageFont
-        return ImageFont.truetype(path, size)
-    except Exception:
-        from PIL import ImageFont
-        return ImageFont.load_default()
-
-F_BIG = font(FONT_BOLD, 76)
-F_SUB = font(FONT_REG, 28)
-F_TAG = font(FONT_BOLD, 18)
+def bg(c1, c2):
+    img = Image.new("RGB", (W, H), c1)
+    d = ImageDraw.Draw(img)
+    for y in range(H):
+        t = y / (H - 1)
+        r = int(c1[0] * (1 - t) + c2[0] * t)
+        g = int(c1[1] * (1 - t) + c2[1] * t)
+        b = int(c1[2] * (1 - t) + c2[2] * t)
+        d.line((0, y, W, y), fill=(r, g, b))
+    return img
 
 
-def fetch_photo(query, lock):
-    url = f"https://loremflickr.com/{W}/{H}/{query}?lock={lock}"
-    req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urlopen(req, timeout=25) as r:
-        data = r.read()
-    return Image.open(io.BytesIO(data)).convert("RGB").resize((W, H), Image.Resampling.LANCZOS)
+def glass(d, x1, y1, x2, y2, r=22):
+    d.rounded_rectangle((x1, y1, x2, y2), radius=r, fill=(255, 255, 255, 22), outline=(255, 255, 255, 85), width=2)
 
 
-def duotone(img, dark, accent):
-    gray = ImageOps.grayscale(img)
-    mapped = ImageOps.colorize(gray, black=tuple(max(0, c - 22) for c in dark), white=accent)
-    mapped = ImageEnhance.Contrast(mapped).enhance(1.18)
-    mapped = ImageEnhance.Color(mapped).enhance(1.24)
-    return mapped
+def draw_saas(d):
+    # Laptop
+    glass(d, 160, 180, 1120, 760)
+    d.rounded_rectangle((240, 250, 1040, 640), radius=18, fill=(10, 17, 30, 210), outline=(160, 215, 255, 120), width=2)
+    d.polygon([(190, 760), (1080, 760), (1160, 840), (120, 840)], fill=(210, 230, 255, 80))
+    # Website blocks
+    d.rounded_rectangle((280, 290, 440, 610), radius=12, fill=(255, 255, 255, 18))
+    for i in range(7):
+        y = 315 + i * 40
+        d.rounded_rectangle((300, y, 420, y + 24), radius=6, fill=(120, 205, 255, 120))
+    d.rounded_rectangle((470, 290, 1000, 440), radius=12, fill=(255, 255, 255, 16))
+    points = [(500, 420), (570, 390), (650, 400), (730, 340), (810, 355), (900, 310), (980, 330)]
+    d.line(points, fill=(130, 255, 220, 230), width=6)
+    d.rounded_rectangle((470, 470, 660, 610), radius=12, fill=(255, 255, 255, 16))
+    d.rounded_rectangle((680, 470, 840, 610), radius=12, fill=(255, 255, 255, 16))
+    d.rounded_rectangle((860, 470, 1000, 610), radius=12, fill=(255, 255, 255, 16))
 
 
-def add_texture(base, accent, dark, seed):
-    random.seed(seed)
-    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(layer)
+def draw_wearable(d):
+    # Watch
+    glass(d, 140, 140, 900, 860)
+    d.rounded_rectangle((430, 210, 620, 790), radius=45, fill=(18, 14, 28, 235), outline=(255, 205, 245, 170), width=3)
+    d.rounded_rectangle((460, 330, 590, 660), radius=24, fill=(255, 255, 255, 24), outline=(255, 225, 250, 110), width=2)
+    d.arc((475, 410, 575, 510), start=25, end=330, fill=(255, 145, 228, 255), width=9)
+    d.ellipse((510, 445, 540, 475), fill=(255, 245, 255, 240))
+    # Product shots
+    for i in range(3):
+        x = 980 + i * 180
+        glass(d, x, 260, x + 150, 550, 18)
+        d.ellipse((x + 32, 330, x + 118, 416), fill=(255, 255, 255, 45), outline=(255, 225, 250, 80), width=2)
+        d.rounded_rectangle((x + 48, 416, x + 102, 500), radius=12, fill=(255, 255, 255, 35))
 
-    # Soft bloom lights
-    for _ in range(6):
-        cx = random.randint(-120, W + 120)
-        cy = random.randint(-120, H + 120)
-        r = random.randint(180, 420)
-        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(*accent, random.randint(20, 48)))
 
-    # Angled translucent forms for editorial look
+def draw_campaign(d):
+    # Street + billboard
+    d.polygon([(0, 760), (W, 680), (W, H), (0, H)], fill=(20, 30, 34, 180))
+    glass(d, 140, 160, 860, 700)
+    d.rounded_rectangle((220, 230, 780, 560), radius=18, fill=(255, 255, 255, 20), outline=(180, 255, 230, 130), width=2)
+    d.polygon([(420, 315), (420, 475), (560, 395)], fill=(210, 255, 240, 170))
+    d.rectangle((320, 700, 380, 900), fill=(255, 255, 255, 50))
+    d.rectangle((620, 700, 680, 900), fill=(255, 255, 255, 50))
+    # Ad cards
+    for i in range(3):
+        x = 940 + i * 190
+        glass(d, x, 250, x + 160, 600, 16)
+        d.rounded_rectangle((x + 20, 290, x + 140, 470), radius=10, fill=(255, 255, 255, 20))
+
+
+def draw_fashion(d):
+    # Clothes rack + editorial cards
+    glass(d, 140, 160, 980, 840)
+    d.line((220, 300, 900, 300), fill=(255, 220, 190, 180), width=8)
+    for i in range(6):
+        x = 260 + i * 110
+        d.line((x, 300, x, 520), fill=(255, 230, 210, 140), width=4)
+        d.polygon([(x - 40, 350), (x + 40, 350), (x + 26, 480), (x - 26, 480)], fill=(255, 185 + i * 8, 155 + i * 5, 120))
+    for r in range(2):
+        for c in range(2):
+            x = 1080 + c * 210
+            y = 250 + r * 290
+            glass(d, x, y, x + 180, y + 250, 16)
+            d.rectangle((x + 24, y + 22, x + 156, y + 175), fill=(255, 255, 255, 40))
+
+
+def draw_strategy(d):
+    # Team board/table
+    glass(d, 120, 170, 1480, 860)
+    d.rounded_rectangle((220, 280, 1380, 740), radius=24, fill=(255, 255, 255, 18), outline=(180, 220, 255, 130), width=2)
+    notes = [
+        (280, 340, (255, 220, 135)),
+        (520, 320, (130, 210, 255)),
+        (760, 360, (146, 255, 220)),
+        (1000, 330, (255, 190, 170)),
+        (460, 520, (220, 190, 255)),
+        (760, 520, (180, 230, 255)),
+    ]
+    for x, y, c in notes:
+        d.rounded_rectangle((x, y, x + 230, y + 140), radius=12, fill=(*c, 180), outline=(255, 255, 255, 160), width=1)
+    d.line((390, 410, 620, 390), fill=(230, 245, 255, 210), width=4)
+    d.line((870, 430, 1120, 400), fill=(230, 245, 255, 210), width=4)
+    d.line((640, 590, 880, 590), fill=(230, 245, 255, 210), width=4)
+
+
+def draw_audio(d):
+    # Turntable + headphones
+    glass(d, 130, 150, 990, 850)
+    d.ellipse((260, 240, 860, 840), fill=(255, 255, 255, 15), outline=(230, 180, 255, 130), width=3)
+    d.ellipse((380, 360, 740, 720), fill=(14, 10, 24, 240), outline=(220, 170, 255, 160), width=3)
+    d.ellipse((510, 490, 610, 590), fill=(255, 255, 255, 50))
+    d.arc((270, 250, 850, 830), start=210, end=330, fill=(255, 165, 245, 230), width=16)
+    for i in range(36):
+        x = 1040 + i * 14
+        h = 80 + ((i * 31) % 180)
+        d.rounded_rectangle((x, 780 - h, x + 10, 780), radius=4, fill=(225, 160, 255, 220))
+
+
+def draw_fintech(d):
+    # Bank tower + card/payments
+    glass(d, 120, 140, 940, 860)
+    d.polygon([(260, 330), (530, 200), (800, 330)], fill=(255, 255, 255, 45))
     for i in range(5):
-        x = random.randint(-200, W)
-        y = random.randint(-150, H)
-        w = random.randint(280, 620)
-        h = random.randint(120, 300)
-        poly = [(x, y), (x + w, y - 70), (x + w + 90, y + h), (x - 90, y + h + 60)]
-        d.polygon(poly, fill=(255, 255, 255, random.randint(10, 24)))
-
-    layer = layer.filter(ImageFilter.GaussianBlur(20))
-    comp = Image.alpha_composite(base.convert("RGBA"), layer)
-
-    # Vignette
-    vignette = Image.new("L", (W, H), 0)
-    vd = ImageDraw.Draw(vignette)
-    vd.ellipse((-250, -170, W + 250, H + 180), fill=220)
-    vignette = vignette.filter(ImageFilter.GaussianBlur(110))
-    dark_fill = Image.new("RGBA", (W, H), (*dark, 255))
-    comp = Image.composite(comp, dark_fill, vignette)
-
-    # Fine grain
-    noise = Image.effect_noise((W, H), 10).convert("L")
-    noise = noise.point(lambda p: int(p * 0.28))
-    grain = Image.new("RGBA", (W, H), (255, 255, 255, 0))
-    grain.putalpha(noise)
-    comp = Image.alpha_composite(comp, grain)
-
-    return comp
+        x = 300 + i * 95
+        d.rectangle((x, 330, x + 50, 740), fill=(255, 255, 255, 40))
+    d.rectangle((260, 740, 840, 790), fill=(255, 255, 255, 55))
+    glass(d, 1030, 260, 1460, 560, 20)
+    d.rounded_rectangle((1080, 320, 1410, 500), radius=18, fill=(255, 255, 255, 25), outline=(185, 225, 255, 140), width=2)
+    d.rectangle((1108, 372, 1380, 412), fill=(255, 255, 255, 45))
 
 
-def circle_cutout(src, size=500):
-    src = src.resize((size, size), Image.Resampling.LANCZOS)
-    mask = Image.new("L", (size, size), 0)
-    md = ImageDraw.Draw(mask)
-    md.ellipse((0, 0, size, size), fill=255)
-    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    out.paste(src, (0, 0), mask)
-    return out
+def draw_food(d):
+    # Plate + packaging shelf
+    glass(d, 120, 150, 950, 860)
+    d.ellipse((240, 240, 840, 840), fill=(255, 255, 255, 28), outline=(205, 255, 220, 145), width=3)
+    d.ellipse((350, 350, 730, 730), fill=(110, 195, 120, 140))
+    d.ellipse((430, 430, 520, 520), fill=(255, 120, 90, 200))
+    d.ellipse((560, 500, 650, 590), fill=(255, 210, 95, 200))
+    d.ellipse((480, 560, 580, 660), fill=(145, 225, 140, 220))
+    for i in range(3):
+        x = 1060 + i * 170
+        glass(d, x, 300, x + 140, 720, 14)
+        d.rectangle((x + 28, 380, x + 112, 520), fill=(150, 240, 170, 155))
 
 
-def render_case(fname, title, subtitle, query, accent, dark, idx):
-    try:
-        photo = fetch_photo(query, 900 + idx)
-    except Exception:
-        photo = Image.new("RGB", (W, H), dark)
+scene = {
+    "saas": draw_saas,
+    "wearable": draw_wearable,
+    "campaign": draw_campaign,
+    "fashion": draw_fashion,
+    "strategy": draw_strategy,
+    "audio": draw_audio,
+    "fintech": draw_fintech,
+    "food": draw_food,
+}
 
-    base = duotone(photo, dark, accent)
-    canvas = add_texture(base, accent, dark, idx * 27)
-    d = ImageDraw.Draw(canvas, "RGBA")
+for i, (name, kind, pal) in enumerate(cases, start=1):
+    img = bg(pal[0], pal[1])
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer, "RGBA")
 
-    # Main object crop
-    focal = photo.crop((280, 90, 1320, 960))
-    focal = ImageEnhance.Contrast(focal).enhance(1.08)
-    bubble = circle_cutout(focal, 630)
-    canvas.paste(bubble, (870, 210), bubble)
+    # subtle lights
+    random.seed(i * 13)
+    for _ in range(6):
+        x = random.randint(-200, W + 200)
+        y = random.randint(-200, H + 200)
+        r = random.randint(180, 420)
+        d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 255, 255, random.randint(12, 30)))
 
-    # Offset ring and frame
-    d.ellipse((840, 180, 1510, 850), outline=(*accent, 190), width=4)
-    d.rounded_rectangle((28, 28, W - 28, H - 28), radius=28, outline=(255, 255, 255, 68), width=2)
+    scene[kind](d)
 
-    # Header chip
-    d.rounded_rectangle((64, 62, 460, 104), radius=16, fill=(255, 255, 255, 34), outline=(255, 255, 255, 84), width=1)
-    d.text((82, 74), "NEBULA STUDIO / SELECTED WORK", font=F_TAG, fill=(236, 245, 255, 242))
+    # border and light lines
+    d.rounded_rectangle((28, 28, W - 28, H - 28), radius=24, outline=(255, 255, 255, 62), width=2)
+    for j in range(-5, 14):
+        x = j * 180
+        d.line((x, 0, x + 460, H), fill=(255, 255, 255, 10), width=1)
 
-    # Type block
-    d.text((66, 170), title, font=F_BIG, fill=(246, 251, 255, 250))
-    d.text((70, 262), subtitle, font=F_SUB, fill=(219, 235, 248, 245))
+    out = Image.alpha_composite(img.convert("RGBA"), layer)
+    out = out.filter(ImageFilter.UnsharpMask(radius=1.4, percent=120, threshold=2))
+    out = ImageOps.autocontrast(out.convert("RGB"), cutoff=1)
+    out.save(os.path.join(OUT, name), "WEBP", quality=92, method=6)
 
-    # Minimal brand cue icons (no graphs)
-    d.rounded_rectangle((66, 340, 136, 410), radius=14, fill=(255, 255, 255, 24))
-    d.rounded_rectangle((148, 340, 218, 410), radius=14, fill=(255, 255, 255, 24))
-    d.rounded_rectangle((230, 340, 300, 410), radius=14, fill=(255, 255, 255, 24))
-    d.ellipse((86, 360, 116, 390), fill=(*accent, 220))
-    d.rectangle((166, 360, 200, 390), fill=(*accent, 220))
-    d.polygon([(248, 390), (282, 390), (265, 358)], fill=(*accent, 220))
-
-    # Bottom glass strip for premium feel
-    d.rounded_rectangle((62, 860, W - 62, 942), radius=20, fill=(255, 255, 255, 20), outline=(255, 255, 255, 64), width=1)
-
-    # Stylish diagonals
-    for i in range(-5, 14):
-        x = i * 180
-        d.line((x, 0, x + 460, H), fill=(255, 255, 255, 14), width=1)
-
-    canvas = canvas.filter(ImageFilter.UnsharpMask(radius=1.7, percent=130, threshold=2))
-    canvas.convert("RGB").save(os.path.join(OUT, fname), "WEBP", quality=92, method=6)
-
-
-for i, case in enumerate(CASES, 1):
-    render_case(*case, idx=i)
-
-print("Regenerated in new style without charts")
+print("Generated clear business-specific illustrations")

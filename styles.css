@@ -322,9 +322,10 @@ a {
 .thumb {
   position: absolute;
   inset: 0;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  background-color: #070b12;
   transition: transform 0.6s var(--ease), filter 0.6s var(--ease);
 }
 
@@ -380,8 +381,8 @@ a {
 }
 
 .project-card:hover .thumb {
-  transform: scale(1.08);
-  filter: blur(1px) saturate(1.15);
+  transform: scale(1.01);
+  filter: saturate(1.08);
 }
 
 .project-card:hover .hover-copy {
@@ -586,11 +587,12 @@ a {
 
 .modal-visual {
   margin-top: 0.3rem;
-  height: 220px;
+  height: 320px;
   border-radius: 0.8rem;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  background-color: #070b12;
   background-image: url("./assets/images/project-1.webp");
 }
 
